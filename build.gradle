@@ -1,0 +1,43 @@
+group 'quasar-verifyInstrumentation-test'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.0.5-2'
+    ext.quasar_version = '0.7.6'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+
+configurations {
+    quasar
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "co.paralleluniverse:quasar-core:$quasar_version:jdk8"
+    compile "co.paralleluniverse:quasar-actors:$quasar_version"
+    compile "co.paralleluniverse:quasar-kotlin:$quasar_version"
+    quasar "co.paralleluniverse:quasar-core:$quasar_version:jdk8"
+}
+
+mainClassName = 'com.test.TestKt'
+
+run {
+    main = mainClassName
+    jvmArgs "-javaagent:${configurations.quasar.iterator().next()}" // =v, =d
+    systemProperty 'co.paralleluniverse.fibers.verifyInstrumentation', 'true'
+    systemProperty 'co.paralleluniverse.debugMode', 'true'
+}
